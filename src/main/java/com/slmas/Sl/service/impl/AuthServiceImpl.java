@@ -12,6 +12,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
+import java.util.Locale;
+
 @Service
 public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
@@ -36,9 +38,10 @@ public class AuthServiceImpl implements AuthService {
         } catch (Exception e) {
             throw new RuntimeException("Failed to decrypt password", e);
         }
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUserName(), decryptedPassword));
+        String userName = request.getUserName() == null ? null : request.getUserName().trim().toLowerCase(Locale.ROOT);
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userName, decryptedPassword));
 
-        User user = userRepository.findUserByName(request.getUserName());
+        User user = userRepository.findUserByName(userName);
 
         String token = jwtService.getToken(user);
         AuthResponseDto response = new AuthResponseDto();

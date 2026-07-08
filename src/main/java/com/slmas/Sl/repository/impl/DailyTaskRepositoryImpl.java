@@ -26,9 +26,19 @@ public class DailyTaskRepositoryImpl implements DailyTaskRepository {
     }
 
     @Override
+    public DailyTask findRecurringByUserIdAndDateAndContent(Long userId, LocalDate date, String title, String description) {
+        List<DailyTask> matches = jdbcTemplate.query(
+                "SELECT * FROM DailyTasks WHERE user_id = ? AND task_date = ? AND type = 'recurrente' AND LOWER(TRIM(title)) = LOWER(TRIM(?)) AND LOWER(TRIM(description)) = LOWER(TRIM(?)) ORDER BY title LIMIT 1",
+                new Object[]{userId, Date.valueOf(date), title, description},
+                rowMapper()
+        );
+        return matches.isEmpty() ? null : matches.get(0);
+    }
+
+    @Override
     public DailyTask create(DailyTask dailyTask) {
         dailyTask.setId(UUID.randomUUID().toString());
-        if (dailyTask.getArea().isEmpty()) dailyTask.setArea("Sistemas");
+        if (dailyTask.getArea() == null || dailyTask.getArea().isBlank()) dailyTask.setArea("Sistemas");
         jdbcTemplate.update("INSERT INTO DailyTasks (id, user_id, user_name, task_date, type, title, description, area) VALUES (?,?,?,?,?,?,?,?)",
                 dailyTask.getId(), dailyTask.getUserId(), dailyTask.getUserName(), Date.valueOf(dailyTask.getDate()), dailyTask.getType(),
                 dailyTask.getTitle(), dailyTask.getDescription(), dailyTask.getArea());

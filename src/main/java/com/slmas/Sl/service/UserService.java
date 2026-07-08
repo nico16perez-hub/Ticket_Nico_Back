@@ -11,6 +11,7 @@ import java.util.List;
 public interface UserService {
     String createUser (UserRequestDto userRequestDto) throws MissingDataException, NoSuchAlgorithmException;
     String deleteUser (String name);
+    String deleteUserById(Long id);
     List<UserResponseDto> getUsers();
     UserResponseDto getUserByName(String userName);
     String editUser (UserRequestDto userRequestDto) throws Exception;

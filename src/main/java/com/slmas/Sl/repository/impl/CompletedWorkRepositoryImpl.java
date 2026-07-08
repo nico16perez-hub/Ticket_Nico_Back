@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -29,16 +30,19 @@ public class CompletedWorkRepositoryImpl implements CompletedWorkRepository {
     public CompletedWork create(CompletedWork completedWork) {
         completedWork.setId(UUID.randomUUID().toString());
         completedWork.setDate(LocalDate.now());
-        jdbcTemplate.update("INSERT INTO CompletedWorks (id, user_id, user_name, work_date, title, area, description) VALUES (?,?,?,?,?,?,?)",
+        jdbcTemplate.update("INSERT INTO CompletedWorks (id, user_id, user_name, work_date, title, area, description, solution) VALUES (?,?,?,?,?,?,?,?)",
                 completedWork.getId(), completedWork.getUserId(), completedWork.getUserName(), Date.valueOf(completedWork.getDate()),
-                completedWork.getTitle(), completedWork.getArea(), completedWork.getDescription());
+                completedWork.getTitle(), completedWork.getArea(), completedWork.getDescription(), completedWork.getSolution());
         return completedWork;
     }
 
     @Override
     public CompletedWork update(CompletedWork completedWork) {
-        jdbcTemplate.update("UPDATE CompletedWorks SET title = ?, area = ?, description = ? WHERE id = ?",
-                completedWork.getTitle(), completedWork.getArea(), completedWork.getDescription(), completedWork.getId());
+        jdbcTemplate.update("UPDATE CompletedWorks SET title = ?, area = ?, description = ?, solution = ?, edited_by = ?, edited_at = ? WHERE id = ?",
+                completedWork.getTitle(), completedWork.getArea(), completedWork.getDescription(), completedWork.getSolution(),
+                completedWork.getEditedBy(),
+                completedWork.getEditedAt() == null ? null : Timestamp.valueOf(completedWork.getEditedAt()),
+                completedWork.getId());
         return jdbcTemplate.queryForObject("SELECT * FROM CompletedWorks WHERE id = ?", rowMapper(), completedWork.getId());
     }
 
@@ -52,6 +56,10 @@ public class CompletedWorkRepositoryImpl implements CompletedWorkRepository {
             completedWork.setTitle(rs.getString("title"));
             completedWork.setArea(rs.getString("area"));
             completedWork.setDescription(rs.getString("description"));
+            completedWork.setSolution(rs.getString("solution"));
+            completedWork.setEditedBy(rs.getString("edited_by"));
+            Timestamp editedAt = rs.getTimestamp("edited_at");
+            completedWork.setEditedAt(editedAt == null ? null : editedAt.toLocalDateTime());
             return completedWork;
         };
     }

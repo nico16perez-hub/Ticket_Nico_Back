@@ -17,6 +17,9 @@ public class RecurringTaskServiceImpl implements RecurringTaskService {
     }
 
     @Override
+    public List<RecurringTask> findAll() { return recurringTaskRepository.findAll(); }
+
+    @Override
     public List<RecurringTask> findByUserId(Long userId) { return recurringTaskRepository.findByUserId(userId); }
 
     @Override

@@ -1,10 +1,12 @@
 package com.slmas.Sl.controller;
 
 import com.slmas.Sl.domain.DailyTask;
+import com.slmas.Sl.domain.User;
 import com.slmas.Sl.dto.request.DailyTaskRequestDto;
 import com.slmas.Sl.service.DailyTaskService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -24,7 +26,12 @@ public class DailyTaskController {
     }
 
     @PostMapping
-    public ResponseEntity<DailyTask> create(@RequestBody DailyTaskRequestDto request) {
+    public ResponseEntity<DailyTask> create(@RequestBody DailyTaskRequestDto request, Authentication authentication) {
+        if (authentication != null && authentication.getPrincipal() instanceof User user) {
+            request.setUserId(user.getId());
+            request.setUserName((user.getName() + " " + user.getSurname()).trim());
+            request.setArea(user.getArea());
+        }
         return ResponseEntity.ok(dailyTaskService.create(request));
     }
 }

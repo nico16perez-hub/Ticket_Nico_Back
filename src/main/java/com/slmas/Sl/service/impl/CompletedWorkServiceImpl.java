@@ -26,6 +26,9 @@ public class CompletedWorkServiceImpl implements CompletedWorkService {
         completedWork.setTitle(request.getTitle());
         completedWork.setArea(request.getArea());
         completedWork.setDescription(request.getDescription());
+        completedWork.setSolution(request.getSolution());
+        completedWork.setEditedBy(request.getEditedBy());
+        completedWork.setEditedAt(request.getEditedAt());
         return completedWorkRepository.create(completedWork);
     }
 
@@ -36,6 +39,9 @@ public class CompletedWorkServiceImpl implements CompletedWorkService {
         completedWork.setTitle(request.getTitle());
         completedWork.setArea(request.getArea());
         completedWork.setDescription(request.getDescription());
+        completedWork.setSolution(request.getSolution());
+        completedWork.setEditedBy(request.getEditedBy());
+        completedWork.setEditedAt(request.getEditedAt());
         return completedWorkRepository.update(completedWork);
     }
 }

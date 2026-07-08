@@ -58,6 +58,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public String deleteUserById(Long id) {
+        Integer response = userRepository.deleteUserById(id);
+        if (response.equals(0)) {
+            throw new EmptyResultDataAccessException(1);
+        }
+        return "Usuario eliminado correctamente";
+    }
+
+    @Override
     public List<UserResponseDto> getUsers() {
         List<User> users = userRepository.getUsers();
         return users.stream().map(this::mapUserToDto).collect(Collectors.toList());
@@ -119,4 +128,3 @@ public class UserServiceImpl implements UserService {
         return userResponseDto;
     }
 }
-

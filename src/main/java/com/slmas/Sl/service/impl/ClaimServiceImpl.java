@@ -1,4 +1,4 @@
-package com.slmas.Sl.service.impl;
+﻿package com.slmas.Sl.service.impl;
 
 import com.slmas.Sl.domain.Claim;
 import com.slmas.Sl.dto.request.ClaimRequestDto;
@@ -38,15 +38,23 @@ public class ClaimServiceImpl implements ClaimService {
 
     @Override
     public Claim update(String id, ClaimRequestDto request) {
+        Claim current = claimRepository.findById(id);
         Claim claim = new Claim();
         claim.setId(id);
-        claim.setTitle(request.getTitle());
-        claim.setArea(request.getArea());
-        claim.setClaimant(request.getClaimant());
-        claim.setProblemType(request.getProblemType());
-        claim.setDescription(request.getDescription());
-        claim.setSolution(request.getSolution());
-        claim.setImages(request.getImages());
+        claim.setUserId(current.getUserId());
+        claim.setUserName(current.getUserName());
+        claim.setDate(current.getDate());
+        claim.setTitle(pick(request.getTitle(), current.getTitle()));
+        claim.setArea(pick(request.getArea(), current.getArea()));
+        claim.setClaimant(pick(request.getClaimant(), current.getClaimant()));
+        claim.setProblemType(pick(request.getProblemType(), current.getProblemType()));
+        claim.setDescription(pick(request.getDescription(), current.getDescription()));
+        claim.setSolution(request.getSolution() != null ? request.getSolution() : current.getSolution());
+        claim.setImages(request.getImages() != null ? request.getImages() : current.getImages());
         return claimRepository.update(claim);
+    }
+
+    private String pick(String incoming, String current) {
+        return incoming != null && !incoming.isBlank() ? incoming : current;
     }
 }

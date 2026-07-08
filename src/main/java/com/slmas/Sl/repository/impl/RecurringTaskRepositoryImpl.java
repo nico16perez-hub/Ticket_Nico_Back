@@ -16,6 +16,11 @@ public class RecurringTaskRepositoryImpl implements RecurringTaskRepository {
     public RecurringTaskRepositoryImpl(JdbcTemplate jdbcTemplate) { this.jdbcTemplate = jdbcTemplate; }
 
     @Override
+    public List<RecurringTask> findAll() {
+        return jdbcTemplate.query("SELECT * FROM RecurringTasks ORDER BY title", rowMapper());
+    }
+
+    @Override
     public List<RecurringTask> findByUserId(Long userId) {
         return jdbcTemplate.query("SELECT * FROM RecurringTasks WHERE user_id = ? ORDER BY title", new Object[]{userId}, rowMapper());
     }

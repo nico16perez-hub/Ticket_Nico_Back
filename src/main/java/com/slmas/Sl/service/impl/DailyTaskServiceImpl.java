@@ -27,7 +27,16 @@ public class DailyTaskServiceImpl implements DailyTaskService {
         dailyTask.setType(request.getType());
         dailyTask.setTitle(request.getTitle());
         dailyTask.setDescription(request.getDescription());
-        dailyTask.setArea("Sistemas");
+        dailyTask.setArea(request.getArea() == null || request.getArea().isBlank() ? "Sistemas" : request.getArea());
+        if ("recurrente".equalsIgnoreCase(dailyTask.getType())) {
+            DailyTask existing = dailyTaskRepository.findRecurringByUserIdAndDateAndContent(
+                    dailyTask.getUserId(),
+                    dailyTask.getDate(),
+                    dailyTask.getTitle(),
+                    dailyTask.getDescription()
+            );
+            if (existing != null) return existing;
+        }
         return dailyTaskRepository.create(dailyTask);
     }
 }

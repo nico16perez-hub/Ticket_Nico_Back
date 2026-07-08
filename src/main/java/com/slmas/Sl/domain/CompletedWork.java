@@ -1,6 +1,7 @@
 package com.slmas.Sl.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class CompletedWork {
     private String id;
@@ -10,6 +11,9 @@ public class CompletedWork {
     private String title;
     private String area;
     private String description;
+    private String solution;
+    private String editedBy;
+    private LocalDateTime editedAt;
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
@@ -25,4 +29,10 @@ public class CompletedWork {
     public void setArea(String area) { this.area = area; }
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+    public String getSolution() { return solution; }
+    public void setSolution(String solution) { this.solution = solution; }
+    public String getEditedBy() { return editedBy; }
+    public void setEditedBy(String editedBy) { this.editedBy = editedBy; }
+    public LocalDateTime getEditedAt() { return editedAt; }
+    public void setEditedAt(LocalDateTime editedAt) { this.editedAt = editedAt; }
 }

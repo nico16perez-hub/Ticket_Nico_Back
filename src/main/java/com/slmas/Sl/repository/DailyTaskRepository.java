@@ -6,5 +6,6 @@ import java.util.List;
 
 public interface DailyTaskRepository {
     List<DailyTask> findByUserIdAndDate(Long userId, LocalDate date);
+    DailyTask findRecurringByUserIdAndDateAndContent(Long userId, LocalDate date, String title, String description);
     DailyTask create(DailyTask dailyTask);
 }

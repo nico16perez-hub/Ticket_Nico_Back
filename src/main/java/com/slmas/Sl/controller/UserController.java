@@ -51,6 +51,19 @@ public class UserController {
     }
 
     @CrossOrigin
+    @DeleteMapping("/deleteById/{id}")
+    public ResponseEntity<String> deleteUserByIdHandler(@PathVariable Long id){
+        try{
+            String response = userService.deleteUserById(id);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        }catch (EmptyResultDataAccessException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Usuario no encontrado!");
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @CrossOrigin
     @GetMapping("/getUsers")
     public ResponseEntity<?> getUsersHandler () {
         try {
