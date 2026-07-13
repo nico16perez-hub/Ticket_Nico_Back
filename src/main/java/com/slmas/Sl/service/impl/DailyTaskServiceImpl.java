@@ -7,6 +7,7 @@ import com.slmas.Sl.service.DailyTaskService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -28,6 +29,7 @@ public class DailyTaskServiceImpl implements DailyTaskService {
         dailyTask.setTitle(request.getTitle());
         dailyTask.setDescription(request.getDescription());
         dailyTask.setArea(request.getArea() == null || request.getArea().isBlank() ? "Sistemas" : request.getArea());
+        dailyTask.setTimestamp(LocalDateTime.now());
         if ("recurrente".equalsIgnoreCase(dailyTask.getType())) {
             DailyTask existing = dailyTaskRepository.findRecurringByUserIdAndDateAndContent(
                     dailyTask.getUserId(),
@@ -38,5 +40,10 @@ public class DailyTaskServiceImpl implements DailyTaskService {
             if (existing != null) return existing;
         }
         return dailyTaskRepository.create(dailyTask);
+    }
+
+    @Override
+    public boolean deleteRecurringById(String id, Long userId) {
+        return dailyTaskRepository.deleteById(id, userId) > 0;
     }
 }

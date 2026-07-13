@@ -1,6 +1,7 @@
 package com.slmas.Sl.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class DailyTask {
     private String id;
@@ -11,6 +12,7 @@ public class DailyTask {
     private String title;
     private String description;
     private String area;
+    private LocalDateTime timestamp;
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
@@ -28,4 +30,6 @@ public class DailyTask {
     public void setDescription(String description) { this.description = description; }
     public String getArea() { return area; }
     public void setArea(String area) { this.area = area; }
+    public LocalDateTime getTimestamp() { return timestamp; }
+    public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
 }

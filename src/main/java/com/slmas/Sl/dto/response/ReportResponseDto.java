@@ -10,6 +10,7 @@ public class ReportResponseDto {
     private String title;
     private String area;
     private String description;
+    private String solution;
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
@@ -25,4 +26,6 @@ public class ReportResponseDto {
     public void setArea(String area) { this.area = area; }
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+    public String getSolution() { return solution; }
+    public void setSolution(String solution) { this.solution = solution; }
 }

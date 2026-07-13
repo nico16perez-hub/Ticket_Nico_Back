@@ -7,7 +7,9 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,10 +41,20 @@ public class DailyTaskRepositoryImpl implements DailyTaskRepository {
     public DailyTask create(DailyTask dailyTask) {
         dailyTask.setId(UUID.randomUUID().toString());
         if (dailyTask.getArea() == null || dailyTask.getArea().isBlank()) dailyTask.setArea("Sistemas");
-        jdbcTemplate.update("INSERT INTO DailyTasks (id, user_id, user_name, task_date, type, title, description, area) VALUES (?,?,?,?,?,?,?,?)",
+        if (dailyTask.getTimestamp() == null) dailyTask.setTimestamp(LocalDateTime.now());
+        jdbcTemplate.update("INSERT INTO DailyTasks (id, user_id, user_name, task_date, type, title, description, area, created_at) VALUES (?,?,?,?,?,?,?,?,?)",
                 dailyTask.getId(), dailyTask.getUserId(), dailyTask.getUserName(), Date.valueOf(dailyTask.getDate()), dailyTask.getType(),
-                dailyTask.getTitle(), dailyTask.getDescription(), dailyTask.getArea());
+                dailyTask.getTitle(), dailyTask.getDescription(), dailyTask.getArea(), Timestamp.valueOf(dailyTask.getTimestamp()));
         return dailyTask;
+    }
+
+    @Override
+    public Integer deleteById(String id, Long userId) {
+        return jdbcTemplate.update(
+                "DELETE FROM DailyTasks WHERE id = ? AND user_id = ? AND type = 'recurrente'",
+                id,
+                userId
+        );
     }
 
     private RowMapper<DailyTask> rowMapper() {
@@ -56,6 +68,8 @@ public class DailyTaskRepositoryImpl implements DailyTaskRepository {
             dailyTask.setTitle(rs.getString("title"));
             dailyTask.setDescription(rs.getString("description"));
             dailyTask.setArea(rs.getString("area"));
+            Timestamp timestamp = rs.getTimestamp("created_at");
+            dailyTask.setTimestamp(timestamp == null ? null : timestamp.toLocalDateTime());
             return dailyTask;
         };
     }

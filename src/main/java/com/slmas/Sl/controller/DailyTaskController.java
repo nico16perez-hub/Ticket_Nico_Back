@@ -34,4 +34,13 @@ public class DailyTaskController {
         }
         return ResponseEntity.ok(dailyTaskService.create(request));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable String id, Authentication authentication) {
+        if (authentication != null && authentication.getPrincipal() instanceof User user) {
+            boolean deleted = dailyTaskService.deleteRecurringById(id, user.getId());
+            return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.status(401).build();
+    }
 }

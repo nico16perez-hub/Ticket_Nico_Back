@@ -8,4 +8,5 @@ import java.util.List;
 public interface DailyTaskService {
     List<DailyTask> findByUserIdAndDate(Long userId, LocalDate date);
     DailyTask create(DailyTaskRequestDto request);
+    boolean deleteRecurringById(String id, Long userId);
 }

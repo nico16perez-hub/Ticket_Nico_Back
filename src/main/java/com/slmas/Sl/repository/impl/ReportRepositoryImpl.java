@@ -17,11 +17,11 @@ public class ReportRepositoryImpl implements ReportRepository {
 
     @Override
     public List<ReportResponseDto> findByDateBetween(LocalDate from, LocalDate to) {
-        String sql = "SELECT id, task_date as event_date, user_name, type, title, area, description FROM DailyTasks WHERE task_date BETWEEN ? AND ? " +
+        String sql = "SELECT id, task_date as event_date, user_name, type, title, area, description, NULL as solution FROM DailyTasks WHERE task_date BETWEEN ? AND ? " +
                 "UNION ALL " +
-                "SELECT id, claim_date as event_date, user_name, 'reclamo' as type, title, area, description FROM Claims WHERE claim_date BETWEEN ? AND ? " +
+                "SELECT id, claim_date as event_date, user_name, 'reclamo' as type, title, area, description, solution FROM Claims WHERE claim_date BETWEEN ? AND ? " +
                 "UNION ALL " +
-                "SELECT id, work_date as event_date, user_name, 'trabajo' as type, title, area, description FROM CompletedWorks WHERE work_date BETWEEN ? AND ? " +
+                "SELECT id, work_date as event_date, user_name, 'trabajo' as type, title, area, description, solution FROM CompletedWorks WHERE work_date BETWEEN ? AND ? " +
                 "ORDER BY event_date DESC";
 
         return jdbcTemplate.query(sql,
@@ -35,6 +35,7 @@ public class ReportRepositoryImpl implements ReportRepository {
                     report.setTitle(rs.getString("title"));
                     report.setArea(rs.getString("area"));
                     report.setDescription(rs.getString("description"));
+                    report.setSolution(rs.getString("solution"));
                     return report;
                 });
     }
