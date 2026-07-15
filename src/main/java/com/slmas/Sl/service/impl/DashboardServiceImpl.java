@@ -123,6 +123,8 @@ public class DashboardServiceImpl implements DashboardService {
                     completedWork.setArea(rs.getString("area"));
                     completedWork.setDescription(rs.getString("description"));
                     completedWork.setSolution(rs.getString("solution"));
+                    Timestamp createdAt = rs.getTimestamp("created_at");
+                    completedWork.setCreatedAt(createdAt == null ? null : createdAt.toLocalDateTime());
                     completedWork.setEditedBy(rs.getString("edited_by"));
                     Timestamp editedAt = rs.getTimestamp("edited_at");
                     completedWork.setEditedAt(editedAt == null ? null : editedAt.toLocalDateTime());

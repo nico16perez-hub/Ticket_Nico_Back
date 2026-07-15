@@ -12,6 +12,7 @@ public class CompletedWork {
     private String area;
     private String description;
     private String solution;
+    private LocalDateTime createdAt;
     private String editedBy;
     private LocalDateTime editedAt;
 
@@ -31,6 +32,8 @@ public class CompletedWork {
     public void setDescription(String description) { this.description = description; }
     public String getSolution() { return solution; }
     public void setSolution(String solution) { this.solution = solution; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     public String getEditedBy() { return editedBy; }
     public void setEditedBy(String editedBy) { this.editedBy = editedBy; }
     public LocalDateTime getEditedAt() { return editedAt; }

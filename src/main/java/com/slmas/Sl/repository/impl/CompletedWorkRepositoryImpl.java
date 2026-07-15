@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,9 +31,10 @@ public class CompletedWorkRepositoryImpl implements CompletedWorkRepository {
     public CompletedWork create(CompletedWork completedWork) {
         completedWork.setId(UUID.randomUUID().toString());
         completedWork.setDate(LocalDate.now());
-        jdbcTemplate.update("INSERT INTO CompletedWorks (id, user_id, user_name, work_date, title, area, description, solution) VALUES (?,?,?,?,?,?,?,?)",
+        completedWork.setCreatedAt(LocalDateTime.now());
+        jdbcTemplate.update("INSERT INTO CompletedWorks (id, user_id, user_name, work_date, created_at, title, area, description, solution) VALUES (?,?,?,?,?,?,?,?,?)",
                 completedWork.getId(), completedWork.getUserId(), completedWork.getUserName(), Date.valueOf(completedWork.getDate()),
-                completedWork.getTitle(), completedWork.getArea(), completedWork.getDescription(), completedWork.getSolution());
+                Timestamp.valueOf(completedWork.getCreatedAt()), completedWork.getTitle(), completedWork.getArea(), completedWork.getDescription(), completedWork.getSolution());
         return completedWork;
     }
 
@@ -57,6 +59,8 @@ public class CompletedWorkRepositoryImpl implements CompletedWorkRepository {
             completedWork.setArea(rs.getString("area"));
             completedWork.setDescription(rs.getString("description"));
             completedWork.setSolution(rs.getString("solution"));
+            Timestamp createdAt = rs.getTimestamp("created_at");
+            completedWork.setCreatedAt(createdAt == null ? null : createdAt.toLocalDateTime());
             completedWork.setEditedBy(rs.getString("edited_by"));
             Timestamp editedAt = rs.getTimestamp("edited_at");
             completedWork.setEditedAt(editedAt == null ? null : editedAt.toLocalDateTime());
