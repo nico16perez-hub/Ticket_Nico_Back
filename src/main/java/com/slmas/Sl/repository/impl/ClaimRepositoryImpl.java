@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
@@ -47,9 +48,21 @@ public class ClaimRepositoryImpl implements ClaimRepository {
         } catch (Exception e) {
             throw new RuntimeException("No se pudieron serializar las imágenes", e);
         }
-        jdbcTemplate.update("INSERT INTO Claims (id, user_id, user_name, claim_date, title, area, claimant, problem_type, description, solution, images) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+        String editHistoryJson;
+        String resolutionHistoryJson;
+        try {
+            editHistoryJson = objectMapper.writeValueAsString(claim.getEditHistory());
+            resolutionHistoryJson = objectMapper.writeValueAsString(claim.getResolutionHistory());
+        } catch (Exception e) {
+            throw new RuntimeException("No se pudo serializar la auditoria", e);
+        }
+        jdbcTemplate.update("INSERT INTO Claims (id, user_id, user_name, claim_date, title, area, claimant, problem_type, description, solution, images, created_by, created_at, edited_by, edited_at, resolved_by, resolved_at, edit_count, edit_history, resolution_history) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 claim.getId(), claim.getUserId(), claim.getUserName(), Date.valueOf(claim.getDate()), claim.getTitle(), claim.getArea(), claim.getClaimant(),
-                claim.getProblemType(), claim.getDescription(), claim.getSolution(), imagesJson);
+                claim.getProblemType(), claim.getDescription(), claim.getSolution(), imagesJson, claim.getCreatedBy(),
+                claim.getCreatedAt() == null ? null : Timestamp.valueOf(claim.getCreatedAt()),
+                claim.getEditedBy(), claim.getEditedAt() == null ? null : Timestamp.valueOf(claim.getEditedAt()),
+                claim.getResolvedBy(), claim.getResolvedAt() == null ? null : Timestamp.valueOf(claim.getResolvedAt()),
+                claim.getEditCount() == null ? 0 : claim.getEditCount(), editHistoryJson, resolutionHistoryJson);
         return claim;
     }
 
@@ -61,8 +74,19 @@ public class ClaimRepositoryImpl implements ClaimRepository {
         } catch (Exception e) {
             throw new RuntimeException("No se pudieron serializar las imágenes", e);
         }
-        jdbcTemplate.update("UPDATE Claims SET title = ?, area = ?, claimant = ?, problem_type = ?, description = ?, solution = ?, images = ? WHERE id = ?",
-                claim.getTitle(), claim.getArea(), claim.getClaimant(), claim.getProblemType(), claim.getDescription(), claim.getSolution(), imagesJson, claim.getId());
+        String editHistoryJson;
+        String resolutionHistoryJson;
+        try {
+            editHistoryJson = objectMapper.writeValueAsString(claim.getEditHistory());
+            resolutionHistoryJson = objectMapper.writeValueAsString(claim.getResolutionHistory());
+        } catch (Exception e) {
+            throw new RuntimeException("No se pudo serializar la auditoria", e);
+        }
+        jdbcTemplate.update("UPDATE Claims SET title = ?, area = ?, claimant = ?, problem_type = ?, description = ?, solution = ?, images = ?, edited_by = ?, edited_at = ?, resolved_by = ?, resolved_at = ?, edit_count = ?, edit_history = ?, resolution_history = ? WHERE id = ?",
+                claim.getTitle(), claim.getArea(), claim.getClaimant(), claim.getProblemType(), claim.getDescription(), claim.getSolution(), imagesJson,
+                claim.getEditedBy(), claim.getEditedAt() == null ? null : Timestamp.valueOf(claim.getEditedAt()),
+                claim.getResolvedBy(), claim.getResolvedAt() == null ? null : Timestamp.valueOf(claim.getResolvedAt()),
+                claim.getEditCount() == null ? 0 : claim.getEditCount(), editHistoryJson, resolutionHistoryJson, claim.getId());
         return jdbcTemplate.queryForObject("SELECT * FROM Claims WHERE id = ?", rowMapper(), claim.getId());
     }
 
@@ -80,11 +104,33 @@ public class ClaimRepositoryImpl implements ClaimRepository {
             claim.setProblemType(rs.getString("problem_type"));
             claim.setDescription(rs.getString("description"));
             claim.setSolution(rs.getString("solution"));
+            claim.setCreatedBy(rs.getString("created_by"));
+            Timestamp createdAt = rs.getTimestamp("created_at");
+            claim.setCreatedAt(createdAt == null ? null : createdAt.toLocalDateTime());
+            claim.setEditedBy(rs.getString("edited_by"));
+            Timestamp editedAt = rs.getTimestamp("edited_at");
+            claim.setEditedAt(editedAt == null ? null : editedAt.toLocalDateTime());
+            claim.setResolvedBy(rs.getString("resolved_by"));
+            Timestamp resolvedAt = rs.getTimestamp("resolved_at");
+            claim.setResolvedAt(resolvedAt == null ? null : resolvedAt.toLocalDateTime());
+            claim.setEditCount(rs.getObject("edit_count") == null ? 0 : rs.getInt("edit_count"));
             String images = rs.getString("images");
             try {
                 claim.setImages(images == null ? Collections.emptyList() : objectMapper.readValue(images, new TypeReference<List<String>>() {}));
             } catch (Exception e) {
                 claim.setImages(Collections.emptyList());
+            }
+            String editHistory = rs.getString("edit_history");
+            try {
+                claim.setEditHistory(editHistory == null ? Collections.emptyList() : objectMapper.readValue(editHistory, new TypeReference<List<Claim.ClaimAuditEntry>>() {}));
+            } catch (Exception e) {
+                claim.setEditHistory(Collections.emptyList());
+            }
+            String resolutionHistory = rs.getString("resolution_history");
+            try {
+                claim.setResolutionHistory(resolutionHistory == null ? Collections.emptyList() : objectMapper.readValue(resolutionHistory, new TypeReference<List<Claim.ClaimAuditEntry>>() {}));
+            } catch (Exception e) {
+                claim.setResolutionHistory(Collections.emptyList());
             }
             return claim;
         };

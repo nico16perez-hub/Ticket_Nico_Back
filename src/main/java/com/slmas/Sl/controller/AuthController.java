@@ -7,7 +7,9 @@ import com.slmas.Sl.service.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import com.slmas.Sl.domain.User;
 
 import javax.naming.AuthenticationException;
 import java.sql.PreparedStatement;
@@ -35,5 +37,21 @@ public class AuthController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
+    }
+
+    @GetMapping("/api/auth/me")
+    public ResponseEntity<AuthResponseDto> me(Authentication authentication) {
+        if (authentication == null || !(authentication.getPrincipal() instanceof User user)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        AuthResponseDto response = new AuthResponseDto();
+        response.setId(user.getId());
+        response.setName(user.getName());
+        response.setSurname(user.getSurname());
+        response.setUserName(user.getUserName());
+        response.setArea(user.getArea());
+        response.setRole(user.getRole());
+        return ResponseEntity.ok(response);
     }
 }

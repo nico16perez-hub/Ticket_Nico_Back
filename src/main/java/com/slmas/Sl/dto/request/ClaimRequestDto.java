@@ -12,6 +12,7 @@ public class ClaimRequestDto {
     private String description;
     private String solution;
     private List<String> images;
+    private String auditUserName;
 
     public Long getUserId() { return userId; }
     public void setUserId(Long userId) { this.userId = userId; }
@@ -31,4 +32,6 @@ public class ClaimRequestDto {
     public void setSolution(String solution) { this.solution = solution; }
     public List<String> getImages() { return images; }
     public void setImages(List<String> images) { this.images = images; }
+    public String getAuditUserName() { return auditUserName; }
+    public void setAuditUserName(String auditUserName) { this.auditUserName = auditUserName; }
 }

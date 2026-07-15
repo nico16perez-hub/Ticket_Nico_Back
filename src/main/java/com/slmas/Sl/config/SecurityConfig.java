@@ -32,9 +32,12 @@ public class SecurityConfig {
                     authRequest
                             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                             .requestMatchers("/auth/login", "/api/auth/login").permitAll()
-                            .requestMatchers("/api/v1/users/create").permitAll()
                             .requestMatchers("/ws/**").permitAll()
                             .requestMatchers("/api/images/**").permitAll()
+                            .requestMatchers("/api/v1/users/**").hasAuthority("ADMIN")
+                            .requestMatchers("/api/reports/**").hasAuthority("ADMIN")
+                            .requestMatchers("/api/statistics/**").hasAuthority("ADMIN")
+                            .requestMatchers("/api/dashboard/**").hasAuthority("ADMIN")
                             .anyRequest().authenticated()
                         )
                 .sessionManagement(sessionManager ->

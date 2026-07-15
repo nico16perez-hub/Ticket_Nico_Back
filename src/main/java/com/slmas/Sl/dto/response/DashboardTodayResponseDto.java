@@ -2,6 +2,7 @@ package com.slmas.Sl.dto.response;
 
 import com.slmas.Sl.domain.Claim;
 import com.slmas.Sl.domain.CompletedWork;
+import com.slmas.Sl.domain.DailyTask;
 import com.slmas.Sl.domain.RecurringTask;
 
 import java.time.LocalDate;
@@ -10,6 +11,7 @@ import java.util.List;
 public class DashboardTodayResponseDto {
     private LocalDate date;
     private List<RecurringTaskDashboardItemDto> recurringTasks;
+    private List<DailyTask> dailyTasks;
     private List<Claim> claims;
     private List<CompletedWork> completedWorks;
 
@@ -17,6 +19,8 @@ public class DashboardTodayResponseDto {
     public void setDate(LocalDate date) { this.date = date; }
     public List<RecurringTaskDashboardItemDto> getRecurringTasks() { return recurringTasks; }
     public void setRecurringTasks(List<RecurringTaskDashboardItemDto> recurringTasks) { this.recurringTasks = recurringTasks; }
+    public List<DailyTask> getDailyTasks() { return dailyTasks; }
+    public void setDailyTasks(List<DailyTask> dailyTasks) { this.dailyTasks = dailyTasks; }
     public List<Claim> getClaims() { return claims; }
     public void setClaims(List<Claim> claims) { this.claims = claims; }
     public List<CompletedWork> getCompletedWorks() { return completedWorks; }

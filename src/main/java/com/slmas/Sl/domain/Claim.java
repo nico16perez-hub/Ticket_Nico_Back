@@ -1,6 +1,7 @@
 package com.slmas.Sl.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class Claim {
@@ -16,6 +17,44 @@ public class Claim {
     private String description;
     private String solution;
     private List<String> images;
+    private String createdBy;
+    private LocalDateTime createdAt;
+    private String editedBy;
+    private LocalDateTime editedAt;
+    private String resolvedBy;
+    private LocalDateTime resolvedAt;
+    private Integer editCount;
+    private List<ClaimAuditEntry> editHistory;
+    private List<ClaimAuditEntry> resolutionHistory;
+
+    public static class ClaimAuditEntry {
+        private String by;
+        private String at;
+
+        public ClaimAuditEntry() {
+        }
+
+        public ClaimAuditEntry(String by, String at) {
+            this.by = by;
+            this.at = at;
+        }
+
+        public String getBy() {
+            return by;
+        }
+
+        public void setBy(String by) {
+            this.by = by;
+        }
+
+        public String getAt() {
+            return at;
+        }
+
+        public void setAt(String at) {
+            this.at = at;
+        }
+    }
 
     public String getId() {
         return id;
@@ -111,5 +150,77 @@ public class Claim {
 
     public void setImages(List<String> images) {
         this.images = images;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getEditedBy() {
+        return editedBy;
+    }
+
+    public void setEditedBy(String editedBy) {
+        this.editedBy = editedBy;
+    }
+
+    public LocalDateTime getEditedAt() {
+        return editedAt;
+    }
+
+    public void setEditedAt(LocalDateTime editedAt) {
+        this.editedAt = editedAt;
+    }
+
+    public String getResolvedBy() {
+        return resolvedBy;
+    }
+
+    public void setResolvedBy(String resolvedBy) {
+        this.resolvedBy = resolvedBy;
+    }
+
+    public LocalDateTime getResolvedAt() {
+        return resolvedAt;
+    }
+
+    public void setResolvedAt(LocalDateTime resolvedAt) {
+        this.resolvedAt = resolvedAt;
+    }
+
+    public Integer getEditCount() {
+        return editCount;
+    }
+
+    public void setEditCount(Integer editCount) {
+        this.editCount = editCount;
+    }
+
+    public List<ClaimAuditEntry> getEditHistory() {
+        return editHistory;
+    }
+
+    public void setEditHistory(List<ClaimAuditEntry> editHistory) {
+        this.editHistory = editHistory;
+    }
+
+    public List<ClaimAuditEntry> getResolutionHistory() {
+        return resolutionHistory;
+    }
+
+    public void setResolutionHistory(List<ClaimAuditEntry> resolutionHistory) {
+        this.resolutionHistory = resolutionHistory;
     }
 }

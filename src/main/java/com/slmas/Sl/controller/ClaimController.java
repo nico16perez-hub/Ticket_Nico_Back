@@ -37,7 +37,8 @@ public class ClaimController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Claim> update(@PathVariable String id, @RequestBody ClaimRequestDto request) {
+    public ResponseEntity<Claim> update(@PathVariable String id, @RequestBody ClaimRequestDto request, Authentication authentication) {
+        applyAuditUser(request, authentication);
         return ResponseEntity.ok(claimService.update(id, request));
     }
 
@@ -45,6 +46,13 @@ public class ClaimController {
         if (authentication != null && authentication.getPrincipal() instanceof User user) {
             request.setUserId(user.getId());
             request.setUserName((user.getName() + " " + user.getSurname()).trim());
+            request.setAuditUserName(request.getUserName());
+        }
+    }
+
+    private void applyAuditUser(ClaimRequestDto request, Authentication authentication) {
+        if (authentication != null && authentication.getPrincipal() instanceof User user) {
+            request.setAuditUserName((user.getName() + " " + user.getSurname()).trim());
         }
     }
 }
