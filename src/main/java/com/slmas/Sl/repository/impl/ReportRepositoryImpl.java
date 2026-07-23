@@ -17,12 +17,12 @@ public class ReportRepositoryImpl implements ReportRepository {
 
     @Override
     public List<ReportResponseDto> findByDateBetween(LocalDate from, LocalDate to) {
-        String sql = "SELECT id, task_date as event_date, user_name, type, title, area, description, NULL as solution FROM DailyTasks WHERE task_date BETWEEN ? AND ? " +
+        String sql = "SELECT id, task_date as event_date, created_at as event_time, user_name, type, title, area, description, NULL as solution FROM DailyTasks WHERE task_date BETWEEN ? AND ? " +
                 "UNION ALL " +
-                "SELECT id, claim_date as event_date, user_name, 'reclamo' as type, title, area, description, solution FROM Claims WHERE claim_date BETWEEN ? AND ? " +
+                "SELECT id, claim_date as event_date, created_at as event_time, user_name, 'reclamo' as type, title, area, description, solution FROM Claims WHERE claim_date BETWEEN ? AND ? " +
                 "UNION ALL " +
-                "SELECT id, work_date as event_date, user_name, 'trabajo' as type, title, area, description, solution FROM CompletedWorks WHERE work_date BETWEEN ? AND ? " +
-                "ORDER BY event_date DESC";
+                "SELECT id, work_date as event_date, created_at as event_time, user_name, 'trabajo' as type, title, area, description, solution FROM CompletedWorks WHERE work_date BETWEEN ? AND ? " +
+                "ORDER BY event_date DESC, event_time DESC";
 
         return jdbcTemplate.query(sql,
                 new Object[]{Date.valueOf(from), Date.valueOf(to), Date.valueOf(from), Date.valueOf(to), Date.valueOf(from), Date.valueOf(to)},
@@ -30,6 +30,9 @@ public class ReportRepositoryImpl implements ReportRepository {
                     ReportResponseDto report = new ReportResponseDto();
                     report.setId(rs.getString("id"));
                     report.setDate(rs.getDate("event_date").toLocalDate());
+                    if (rs.getTimestamp("event_time") != null) {
+                        report.setTimestamp(rs.getTimestamp("event_time").toLocalDateTime());
+                    }
                     report.setUserName(rs.getString("user_name"));
                     report.setType(rs.getString("type"));
                     report.setTitle(rs.getString("title"));

@@ -7,6 +7,7 @@ import com.slmas.Sl.service.CompletedWorkService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -23,6 +24,8 @@ public class CompletedWorkServiceImpl implements CompletedWorkService {
         CompletedWork completedWork = new CompletedWork();
         completedWork.setUserId(request.getUserId());
         completedWork.setUserName(request.getUserName());
+        completedWork.setDate(request.getDate() == null ? LocalDate.now() : request.getDate());
+        completedWork.setCreatedAt(request.getCreatedAt() == null ? LocalDateTime.now() : request.getCreatedAt());
         completedWork.setTitle(request.getTitle());
         completedWork.setArea(request.getArea());
         completedWork.setDescription(request.getDescription());

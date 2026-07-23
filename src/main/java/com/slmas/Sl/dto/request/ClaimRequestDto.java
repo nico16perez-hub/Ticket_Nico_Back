@@ -1,10 +1,14 @@
 package com.slmas.Sl.dto.request;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class ClaimRequestDto {
     private Long userId;
     private String userName;
+    private LocalDate date;
+    private LocalDateTime createdAt;
     private String title;
     private String area;
     private String claimant;
@@ -18,6 +22,10 @@ public class ClaimRequestDto {
     public void setUserId(Long userId) { this.userId = userId; }
     public String getUserName() { return userName; }
     public void setUserName(String userName) { this.userName = userName; }
+    public LocalDate getDate() { return date; }
+    public void setDate(LocalDate date) { this.date = date; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
     public String getArea() { return area; }

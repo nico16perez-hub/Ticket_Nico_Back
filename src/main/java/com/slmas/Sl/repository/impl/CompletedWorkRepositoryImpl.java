@@ -30,8 +30,8 @@ public class CompletedWorkRepositoryImpl implements CompletedWorkRepository {
     @Override
     public CompletedWork create(CompletedWork completedWork) {
         completedWork.setId(UUID.randomUUID().toString());
-        completedWork.setDate(LocalDate.now());
-        completedWork.setCreatedAt(LocalDateTime.now());
+        if (completedWork.getDate() == null) completedWork.setDate(LocalDate.now());
+        if (completedWork.getCreatedAt() == null) completedWork.setCreatedAt(LocalDateTime.now());
         jdbcTemplate.update("INSERT INTO CompletedWorks (id, user_id, user_name, work_date, created_at, title, area, description, solution) VALUES (?,?,?,?,?,?,?,?,?)",
                 completedWork.getId(), completedWork.getUserId(), completedWork.getUserName(), Date.valueOf(completedWork.getDate()),
                 Timestamp.valueOf(completedWork.getCreatedAt()), completedWork.getTitle(), completedWork.getArea(), completedWork.getDescription(), completedWork.getSolution());

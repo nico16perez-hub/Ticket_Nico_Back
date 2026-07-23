@@ -15,16 +15,7 @@ public class ReportServiceImpl implements ReportService {
     public ReportServiceImpl(ReportRepository reportRepository) { this.reportRepository = reportRepository; }
 
     @Override
-    public List<ReportResponseDto> getReport(String period) {
-        LocalDate to = LocalDate.now();
-        LocalDate from;
-        if ("week".equalsIgnoreCase(period)) {
-            from = to.minusDays(6);
-        } else if ("month".equalsIgnoreCase(period)) {
-            from = to.minusDays(29);
-        } else {
-            from = to;
-        }
+    public List<ReportResponseDto> getReport(LocalDate from, LocalDate to) {
         return reportRepository.findByDateBetween(from, to);
     }
 }

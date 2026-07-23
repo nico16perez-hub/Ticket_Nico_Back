@@ -41,7 +41,7 @@ public class ClaimRepositoryImpl implements ClaimRepository {
     @Override
     public Claim create(Claim claim) {
         claim.setId(UUID.randomUUID().toString());
-        claim.setDate(LocalDate.now());
+        if (claim.getDate() == null) claim.setDate(LocalDate.now());
         String imagesJson;
         try {
             imagesJson = objectMapper.writeValueAsString(claim.getImages());

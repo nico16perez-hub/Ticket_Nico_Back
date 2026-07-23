@@ -28,6 +28,7 @@ public class ClaimServiceImpl implements ClaimService {
         Claim claim = new Claim();
         claim.setUserId(request.getUserId());
         claim.setUserName(request.getUserName());
+        claim.setDate(request.getDate() == null ? LocalDate.now() : request.getDate());
         claim.setTitle(request.getTitle());
         claim.setArea(request.getArea());
         claim.setClaimant(request.getClaimant());
@@ -36,7 +37,7 @@ public class ClaimServiceImpl implements ClaimService {
         claim.setSolution(request.getSolution());
         claim.setImages(request.getImages());
         claim.setCreatedBy(pick(request.getAuditUserName(), request.getUserName()));
-        claim.setCreatedAt(LocalDateTime.now());
+        claim.setCreatedAt(request.getCreatedAt() == null ? LocalDateTime.now() : request.getCreatedAt());
         claim.setEditCount(0);
         claim.setEditHistory(new ArrayList<>());
         claim.setResolutionHistory(new ArrayList<>());

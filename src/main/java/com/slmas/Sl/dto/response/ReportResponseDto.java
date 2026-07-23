@@ -1,10 +1,12 @@
 package com.slmas.Sl.dto.response;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class ReportResponseDto {
     private String id;
     private LocalDate date;
+    private LocalDateTime timestamp;
     private String userName;
     private String type;
     private String title;
@@ -16,6 +18,8 @@ public class ReportResponseDto {
     public void setId(String id) { this.id = id; }
     public LocalDate getDate() { return date; }
     public void setDate(LocalDate date) { this.date = date; }
+    public LocalDateTime getTimestamp() { return timestamp; }
+    public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
     public String getUserName() { return userName; }
     public void setUserName(String userName) { this.userName = userName; }
     public String getType() { return type; }

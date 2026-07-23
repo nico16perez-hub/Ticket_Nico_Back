@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -18,7 +19,10 @@ public class ReportController {
     public ReportController(ReportService reportService) { this.reportService = reportService; }
 
     @GetMapping
-    public ResponseEntity<List<ReportResponseDto>> getReport(@RequestParam(defaultValue = "today") String period) {
-        return ResponseEntity.ok(reportService.getReport(period));
+    public ResponseEntity<List<ReportResponseDto>> getReport(
+            @RequestParam LocalDate from,
+            @RequestParam LocalDate to
+    ) {
+        return ResponseEntity.ok(reportService.getReport(from, to));
     }
 }
