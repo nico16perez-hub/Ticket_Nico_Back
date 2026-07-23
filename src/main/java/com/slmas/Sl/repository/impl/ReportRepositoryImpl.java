@@ -17,15 +17,18 @@ public class ReportRepositoryImpl implements ReportRepository {
 
     @Override
     public List<ReportResponseDto> findByDateBetween(LocalDate from, LocalDate to) {
-        String sql = "SELECT id, task_date as event_date, user_name, type, title, area, description, NULL as solution FROM DailyTasks WHERE task_date BETWEEN ? AND ? " +
+        String sql = "SELECT id, task_date as event_date, user_name, type, title, area, description, NULL as solution FROM DailyTasks WHERE task_date BETWEEN ? AND ? AND type <> 'recurrente' " +
                 "UNION ALL " +
                 "SELECT id, claim_date as event_date, user_name, 'reclamo' as type, title, area, description, solution FROM Claims WHERE claim_date BETWEEN ? AND ? " +
                 "UNION ALL " +
                 "SELECT id, work_date as event_date, user_name, 'trabajo' as type, title, area, description, solution FROM CompletedWorks WHERE work_date BETWEEN ? AND ? " +
+                "UNION ALL " +
+                "SELECT rt.id, ? as event_date, TRIM(CONCAT(u.name, ' ', u.surname)) as user_name, 'recurrente' as type, rt.title, u.area, rt.description, NULL as solution " +
+                "FROM RecurringTasks rt JOIN Users u ON u.id = rt.user_id " +
                 "ORDER BY event_date DESC";
 
         return jdbcTemplate.query(sql,
-                new Object[]{Date.valueOf(from), Date.valueOf(to), Date.valueOf(from), Date.valueOf(to), Date.valueOf(from), Date.valueOf(to)},
+                new Object[]{Date.valueOf(from), Date.valueOf(to), Date.valueOf(from), Date.valueOf(to), Date.valueOf(from), Date.valueOf(to), Date.valueOf(from)},
                 (rs, rowNum) -> {
                     ReportResponseDto report = new ReportResponseDto();
                     report.setId(rs.getString("id"));

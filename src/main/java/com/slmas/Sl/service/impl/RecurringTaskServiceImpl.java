@@ -32,5 +32,14 @@ public class RecurringTaskServiceImpl implements RecurringTaskService {
     }
 
     @Override
+    public RecurringTask update(String id, RecurringTaskRequestDto request) {
+        RecurringTask recurringTask = new RecurringTask();
+        recurringTask.setUserId(request.getUserId());
+        recurringTask.setTitle(request.getTitle());
+        recurringTask.setDescription(request.getDescription());
+        return recurringTaskRepository.update(id, recurringTask);
+    }
+
+    @Override
     public void deleteById(String id) { recurringTaskRepository.deleteById(id); }
 }

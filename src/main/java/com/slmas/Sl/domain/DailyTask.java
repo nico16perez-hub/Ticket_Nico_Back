@@ -13,6 +13,7 @@ public class DailyTask {
     private String description;
     private String area;
     private LocalDateTime timestamp;
+    private String recurringTaskId;
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
@@ -32,4 +33,8 @@ public class DailyTask {
     public void setArea(String area) { this.area = area; }
     public LocalDateTime getTimestamp() { return timestamp; }
     public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
+    public LocalDateTime getCreatedAt() { return timestamp; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.timestamp = createdAt; }
+    public String getRecurringTaskId() { return recurringTaskId; }
+    public void setRecurringTaskId(String recurringTaskId) { this.recurringTaskId = recurringTaskId; }
 }

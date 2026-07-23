@@ -27,4 +27,16 @@ public class ReportServiceImpl implements ReportService {
         }
         return reportRepository.findByDateBetween(from, to);
     }
+
+    @Override
+    public List<ReportResponseDto> getReport(LocalDate from, LocalDate to) {
+        LocalDate selectedFrom = from == null ? LocalDate.now() : from;
+        LocalDate selectedTo = to == null ? selectedFrom : to;
+        if (selectedFrom.isAfter(selectedTo)) {
+            LocalDate temp = selectedFrom;
+            selectedFrom = selectedTo;
+            selectedTo = temp;
+        }
+        return reportRepository.findByDateBetween(selectedFrom, selectedTo);
+    }
 }

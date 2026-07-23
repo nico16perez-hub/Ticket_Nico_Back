@@ -7,6 +7,7 @@ import java.util.function.Function;
 
 public interface JwtService {
     public String getToken(UserDetails user);
+    public String getToken(UserDetails user, boolean rememberMe);
 
     boolean isTokenValid(String token, UserDetails userDetails);
 

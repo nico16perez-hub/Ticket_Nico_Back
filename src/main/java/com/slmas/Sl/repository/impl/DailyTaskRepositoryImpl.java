@@ -28,9 +28,19 @@ public class DailyTaskRepositoryImpl implements DailyTaskRepository {
     }
 
     @Override
+    public DailyTask findRecurringByUserIdAndDateAndRecurringTaskId(Long userId, LocalDate date, String recurringTaskId) {
+        List<DailyTask> matches = jdbcTemplate.query(
+                "SELECT * FROM DailyTasks WHERE user_id = ? AND task_date = ? AND type = 'recurrente' AND recurring_task_id = ? ORDER BY title LIMIT 1",
+                new Object[]{userId, Date.valueOf(date), recurringTaskId},
+                rowMapper()
+        );
+        return matches.isEmpty() ? null : matches.get(0);
+    }
+
+    @Override
     public DailyTask findRecurringByUserIdAndDateAndContent(Long userId, LocalDate date, String title, String description) {
         List<DailyTask> matches = jdbcTemplate.query(
-                "SELECT * FROM DailyTasks WHERE user_id = ? AND task_date = ? AND type = 'recurrente' AND LOWER(TRIM(title)) = LOWER(TRIM(?)) AND LOWER(TRIM(description)) = LOWER(TRIM(?)) ORDER BY title LIMIT 1",
+                "SELECT * FROM DailyTasks WHERE user_id = ? AND task_date = ? AND type = 'recurrente' AND LOWER(TRIM(title)) = LOWER(TRIM(?)) AND LOWER(TRIM(COALESCE(description, ''))) = LOWER(TRIM(COALESCE(?, ''))) ORDER BY title LIMIT 1",
                 new Object[]{userId, Date.valueOf(date), title, description},
                 rowMapper()
         );
@@ -42,9 +52,9 @@ public class DailyTaskRepositoryImpl implements DailyTaskRepository {
         dailyTask.setId(UUID.randomUUID().toString());
         if (dailyTask.getArea() == null || dailyTask.getArea().isBlank()) dailyTask.setArea("Sistemas");
         if (dailyTask.getTimestamp() == null) dailyTask.setTimestamp(LocalDateTime.now());
-        jdbcTemplate.update("INSERT INTO DailyTasks (id, user_id, user_name, task_date, type, title, description, area, created_at) VALUES (?,?,?,?,?,?,?,?,?)",
+        jdbcTemplate.update("INSERT INTO DailyTasks (id, user_id, user_name, task_date, type, title, description, area, created_at, recurring_task_id) VALUES (?,?,?,?,?,?,?,?,?,?)",
                 dailyTask.getId(), dailyTask.getUserId(), dailyTask.getUserName(), Date.valueOf(dailyTask.getDate()), dailyTask.getType(),
-                dailyTask.getTitle(), dailyTask.getDescription(), dailyTask.getArea(), Timestamp.valueOf(dailyTask.getTimestamp()));
+                dailyTask.getTitle(), dailyTask.getDescription(), dailyTask.getArea(), Timestamp.valueOf(dailyTask.getTimestamp()), dailyTask.getRecurringTaskId());
         return dailyTask;
     }
 
@@ -54,6 +64,16 @@ public class DailyTaskRepositoryImpl implements DailyTaskRepository {
                 "DELETE FROM DailyTasks WHERE id = ? AND user_id = ? AND type = 'recurrente'",
                 id,
                 userId
+        );
+    }
+
+    @Override
+    public Integer deleteRecurringByRecurringTaskIdAndDate(String recurringTaskId, Long userId, LocalDate date) {
+        return jdbcTemplate.update(
+                "DELETE FROM DailyTasks WHERE recurring_task_id = ? AND user_id = ? AND task_date = ? AND type = 'recurrente'",
+                recurringTaskId,
+                userId,
+                Date.valueOf(date)
         );
     }
 
@@ -68,6 +88,7 @@ public class DailyTaskRepositoryImpl implements DailyTaskRepository {
             dailyTask.setTitle(rs.getString("title"));
             dailyTask.setDescription(rs.getString("description"));
             dailyTask.setArea(rs.getString("area"));
+            dailyTask.setRecurringTaskId(rs.getString("recurring_task_id"));
             Timestamp timestamp = rs.getTimestamp("created_at");
             dailyTask.setTimestamp(timestamp == null ? null : timestamp.toLocalDateTime());
             return dailyTask;

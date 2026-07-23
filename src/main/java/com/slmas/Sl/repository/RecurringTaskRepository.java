@@ -5,7 +5,9 @@ import java.util.List;
 
 public interface RecurringTaskRepository {
     List<RecurringTask> findAll();
+    RecurringTask findById(String id);
     List<RecurringTask> findByUserId(Long userId);
     RecurringTask create(RecurringTask recurringTask);
+    RecurringTask update(String id, RecurringTask recurringTask);
     void deleteById(String id);
 }

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.slmas.Sl.domain.Claim;
 import com.slmas.Sl.domain.CompletedWork;
 import com.slmas.Sl.domain.DailyTask;
+import com.slmas.Sl.domain.Ticket;
 import com.slmas.Sl.dto.response.DashboardTodayResponseDto;
 import com.slmas.Sl.service.DashboardService;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -36,8 +37,13 @@ public class DashboardServiceImpl implements DashboardService {
         LocalDate selectedDate = date == null ? LocalDate.now() : date;
 
         List<DashboardTodayResponseDto.RecurringTaskDashboardItemDto> recurringTasks = jdbcTemplate.query(
-                "SELECT rt.id, rt.user_id, TRIM(CONCAT(u.name, ' ', u.surname)) AS user_name, rt.title, rt.description " +
-                "FROM RecurringTasks rt JOIN Users u ON u.id = rt.user_id ORDER BY user_name, rt.title",
+                "SELECT rt.id, rt.user_id, TRIM(CONCAT(u.name, ' ', u.surname)) AS user_name, rt.title, rt.description, " +
+                "dt.id AS daily_task_id, dt.created_at AS completed_at " +
+                "FROM RecurringTasks rt JOIN Users u ON u.id = rt.user_id " +
+                "LEFT JOIN DailyTasks dt ON dt.user_id = rt.user_id AND dt.task_date = ? AND dt.type = 'recurrente' " +
+                "AND (dt.recurring_task_id = rt.id OR (dt.recurring_task_id IS NULL AND LOWER(TRIM(dt.title)) = LOWER(TRIM(rt.title)) AND LOWER(TRIM(COALESCE(dt.description, ''))) = LOWER(TRIM(COALESCE(rt.description, ''))))) " +
+                "ORDER BY user_name, rt.title",
+                new Object[]{Date.valueOf(selectedDate)},
                 (rs, rowNum) -> {
                     DashboardTodayResponseDto.RecurringTaskDashboardItemDto item = new DashboardTodayResponseDto.RecurringTaskDashboardItemDto();
                     item.setId(rs.getString("id"));
@@ -45,6 +51,10 @@ public class DashboardServiceImpl implements DashboardService {
                     item.setUserName(rs.getString("user_name"));
                     item.setTitle(rs.getString("title"));
                     item.setDescription(rs.getString("description"));
+                    item.setDailyTaskId(rs.getString("daily_task_id"));
+                    item.setCompleted(item.getDailyTaskId() != null);
+                    Timestamp completedAt = rs.getTimestamp("completed_at");
+                    item.setCompletedAt(completedAt == null ? null : completedAt.toLocalDateTime());
                     return item;
                 });
 
@@ -131,12 +141,38 @@ public class DashboardServiceImpl implements DashboardService {
                     return completedWork;
                 });
 
+        List<Ticket> tickets = jdbcTemplate.query(
+                "SELECT t.*, TRIM(CONCAT(u.name, ' ', u.surname)) AS standardized_user_name " +
+                "FROM Tickets t JOIN Users u ON u.id = t.user_id " +
+                "WHERE t.closed = true AND CAST(COALESCE(t.solved_date, t.ticket_date) AS DATE) = ? " +
+                "ORDER BY standardized_user_name, t.title",
+                new Object[]{Date.valueOf(selectedDate)},
+                (rs, rowNum) -> {
+                    Ticket ticket = new Ticket();
+                    ticket.setId(rs.getLong("id"));
+                    ticket.setUserId(rs.getLong("user_id"));
+                    ticket.setUserName(rs.getString("standardized_user_name"));
+                    ticket.setArea(rs.getString("area"));
+                    ticket.setDate(rs.getTimestamp("ticket_date"));
+                    ticket.setTitle(rs.getString("title"));
+                    ticket.setType(rs.getString("type"));
+                    ticket.setDescription(rs.getString("description"));
+                    ticket.setSolution(rs.getString("solution"));
+                    String solvedBy = rs.getString("solved_by");
+                    ticket.setSolvedBy(solvedBy == null || solvedBy.isBlank() ? "-" : solvedBy);
+                    ticket.setSolvedDate(rs.getTimestamp("solved_date"));
+                    ticket.setClosed(rs.getBoolean("closed"));
+                    ticket.setImportant(rs.getBoolean("important"));
+                    return ticket;
+                });
+
         DashboardTodayResponseDto response = new DashboardTodayResponseDto();
         response.setDate(selectedDate);
         response.setRecurringTasks(recurringTasks);
         response.setDailyTasks(dailyTasks);
         response.setClaims(claims);
         response.setCompletedWorks(completedWorks);
+        response.setTickets(tickets);
         return response;
     }
 }

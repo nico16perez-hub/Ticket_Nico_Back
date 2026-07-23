@@ -10,6 +10,7 @@ public class DailyTaskRequestDto {
     private String title;
     private String description;
     private String area;
+    private String recurringTaskId;
 
     public Long getUserId() { return userId; }
     public void setUserId(Long userId) { this.userId = userId; }
@@ -25,4 +26,6 @@ public class DailyTaskRequestDto {
     public void setDescription(String description) { this.description = description; }
     public String getArea() { return area; }
     public void setArea(String area) { this.area = area; }
+    public String getRecurringTaskId() { return recurringTaskId; }
+    public void setRecurringTaskId(String recurringTaskId) { this.recurringTaskId = recurringTaskId; }
 }
