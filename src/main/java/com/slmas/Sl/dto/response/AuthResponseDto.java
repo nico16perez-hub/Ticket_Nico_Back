@@ -5,6 +5,7 @@ public class AuthResponseDto {
     String name;
     String surname;
     String token;
+    Long expiresAt;
     String userName;
     String area;
     String role;
@@ -22,6 +23,14 @@ public class AuthResponseDto {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public Long getExpiresAt() {
+        return expiresAt;
+    }
+
+    public void setExpiresAt(Long expiresAt) {
+        this.expiresAt = expiresAt;
     }
 
     public String getRole() {

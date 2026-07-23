@@ -25,7 +25,7 @@ public class ReportRepositoryImpl implements ReportRepository {
                 "ORDER BY event_date DESC, event_time DESC";
 
         return jdbcTemplate.query(sql,
-                new Object[]{Date.valueOf(from), Date.valueOf(to), Date.valueOf(from), Date.valueOf(to), Date.valueOf(from), Date.valueOf(to)},
+                new Object[]{Date.valueOf(from), Date.valueOf(to), Date.valueOf(from), Date.valueOf(to), Date.valueOf(from), Date.valueOf(to), Date.valueOf(from)},
                 (rs, rowNum) -> {
                     ReportResponseDto report = new ReportResponseDto();
                     report.setId(rs.getString("id"));

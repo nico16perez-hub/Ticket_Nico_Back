@@ -43,4 +43,15 @@ public class DailyTaskController {
         }
         return ResponseEntity.status(401).build();
     }
+
+    @DeleteMapping("/recurring/{recurringTaskId}")
+    public ResponseEntity<Void> deleteRecurringByDate(@PathVariable String recurringTaskId,
+                                                      @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
+                                                      Authentication authentication) {
+        if (authentication != null && authentication.getPrincipal() instanceof User user) {
+            boolean deleted = dailyTaskService.deleteRecurringByRecurringTaskIdAndDate(recurringTaskId, user.getId(), date);
+            return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.status(401).build();
+    }
 }

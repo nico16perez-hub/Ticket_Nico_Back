@@ -21,6 +21,12 @@ public class RecurringTaskRepositoryImpl implements RecurringTaskRepository {
     }
 
     @Override
+    public RecurringTask findById(String id) {
+        List<RecurringTask> matches = jdbcTemplate.query("SELECT * FROM RecurringTasks WHERE id = ? LIMIT 1", new Object[]{id}, rowMapper());
+        return matches.isEmpty() ? null : matches.get(0);
+    }
+
+    @Override
     public List<RecurringTask> findByUserId(Long userId) {
         return jdbcTemplate.query("SELECT * FROM RecurringTasks WHERE user_id = ? ORDER BY title", new Object[]{userId}, rowMapper());
     }
@@ -34,7 +40,16 @@ public class RecurringTaskRepositoryImpl implements RecurringTaskRepository {
     }
 
     @Override
+    public RecurringTask update(String id, RecurringTask recurringTask) {
+        jdbcTemplate.update("UPDATE RecurringTasks SET user_id = ?, title = ?, description = ? WHERE id = ?",
+                recurringTask.getUserId(), recurringTask.getTitle(), recurringTask.getDescription(), id);
+        recurringTask.setId(id);
+        return recurringTask;
+    }
+
+    @Override
     public void deleteById(String id) {
+        jdbcTemplate.update("UPDATE DailyTasks SET recurring_task_id = NULL WHERE recurring_task_id = ?", id);
         jdbcTemplate.update("DELETE FROM RecurringTasks WHERE id = ?", id);
     }
 

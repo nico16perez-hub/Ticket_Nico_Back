@@ -1,8 +1,12 @@
 package com.slmas.Sl.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+
 public class LoginRequestDto {
     String userName;
     String password;
+    @JsonAlias({"rememberMe", "keepLoggedIn", "mantenerIniciado"})
+    Boolean rememberMe;
 
     public LoginRequestDto() {
     }
@@ -18,6 +22,13 @@ public class LoginRequestDto {
     public String getPassword() {
         return password;
     }
+    public Boolean getRememberMe() {
+        return rememberMe;
+    }
+
+    public boolean isRememberMe() {
+        return Boolean.TRUE.equals(rememberMe);
+    }
 
     public void setUserName(String userName) {
         this.userName = userName;
@@ -27,11 +38,15 @@ public class LoginRequestDto {
         this.password = password;
     }
 
+    public void setRememberMe(Boolean rememberMe) {
+        this.rememberMe = rememberMe;
+    }
+
     @Override
     public String toString() {
         return "LoginRequestDto{" +
                 "userName='" + userName + '\'' +
-                ", password='" + password + '\'' +
+                ", rememberMe=" + rememberMe +
                 '}';
     }
 }

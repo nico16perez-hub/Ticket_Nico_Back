@@ -35,6 +35,14 @@ public class RecurringTaskController {
         return ResponseEntity.ok(recurringTaskService.create(request));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<RecurringTask> update(@PathVariable String id, @RequestBody RecurringTaskRequestDto request, Authentication authentication) {
+        if (authentication != null && authentication.getPrincipal() instanceof User user) {
+            request.setUserId(user.getId());
+        }
+        return ResponseEntity.ok(recurringTaskService.update(id, request));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable String id) {
         recurringTaskService.deleteById(id);

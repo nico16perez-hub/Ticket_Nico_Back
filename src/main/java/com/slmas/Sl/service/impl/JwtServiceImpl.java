@@ -19,13 +19,21 @@ import org.springframework.stereotype.Service;
 public class JwtServiceImpl implements JwtService {
 
     private final String SECRET_KEY;
+    private static final long STANDARD_EXPIRATION_MS = 12L * 60 * 60 * 1000;
+    private static final long REMEMBER_ME_EXPIRATION_MS = 30L * 24 * 60 * 60 * 1000;
+
     public JwtServiceImpl(@Value("${jwt.secret}") String secretKey) {
         this.SECRET_KEY = secretKey;
     }
 
     @Override
     public String getToken(UserDetails user) {
-        return getToken(new HashMap<>(), user);
+        return getToken(user, false);
+    }
+
+    @Override
+    public String getToken(UserDetails user, boolean rememberMe) {
+        return getToken(new HashMap<>(), user, rememberMe ? REMEMBER_ME_EXPIRATION_MS : STANDARD_EXPIRATION_MS);
     }
 
     @Override
@@ -60,13 +68,13 @@ public class JwtServiceImpl implements JwtService {
         return getExpiration(token).before(new Date());
     }
 
-    private String getToken(Map<String,Object> extraClaims, UserDetails user) {
+    private String getToken(Map<String,Object> extraClaims, UserDetails user, long expirationMs) {
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
                 .setSubject(user.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis()+(30L * 24 * 60 * 60 * 1000)))
+                .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
                 .signWith(getKey(), SignatureAlgorithm.HS256)
                 .compact();
     }

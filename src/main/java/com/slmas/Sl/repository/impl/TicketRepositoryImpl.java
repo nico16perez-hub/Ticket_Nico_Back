@@ -24,7 +24,7 @@ public class TicketRepositoryImpl implements TicketRepository {
 
     @Override
     public Long createTicket(Ticket ticket) throws RepositoryException {
-        String CREATE_TICKET = "INSERT INTO Tickets (user_id, user_name, area, ticket_date, title, type, description, image) VALUES (?,?,?,?,?,?,?,?)";
+        String CREATE_TICKET = "INSERT INTO Tickets (user_id, user_name, area, ticket_date, title, type, description, solution, solved_by, solved_date, image, closed, important) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         try {
             jdbcTemplate.update(con -> {
@@ -36,7 +36,16 @@ public class TicketRepositoryImpl implements TicketRepository {
                 ps.setString(5, ticket.getTitle());
                 ps.setString(6, ticket.getType());
                 ps.setString(7, ticket.getDescription());
-                ps.setBytes(8, ticket.getImage());
+                ps.setString(8, ticket.getSolution());
+                ps.setString(9, ticket.getSolvedBy());
+                if (ticket.getSolvedDate() == null) {
+                    ps.setNull(10, Types.TIMESTAMP);
+                } else {
+                    ps.setTimestamp(10, new Timestamp(ticket.getSolvedDate().getTime()));
+                }
+                ps.setBytes(11, ticket.getImage());
+                ps.setBoolean(12, ticket.isClosed());
+                ps.setBoolean(13, ticket.isImportant());
                 return ps;
             }, keyHolder);
             Long ticketId = Objects.requireNonNull(keyHolder.getKey()).longValue();

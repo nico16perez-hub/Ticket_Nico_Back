@@ -9,4 +9,5 @@ public interface DailyTaskService {
     List<DailyTask> findByUserIdAndDate(Long userId, LocalDate date);
     DailyTask create(DailyTaskRequestDto request);
     boolean deleteRecurringById(String id, Long userId);
+    boolean deleteRecurringByRecurringTaskIdAndDate(String recurringTaskId, Long userId, LocalDate date);
 }

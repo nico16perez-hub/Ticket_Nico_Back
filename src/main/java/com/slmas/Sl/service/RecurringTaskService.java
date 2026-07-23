@@ -8,5 +8,6 @@ public interface RecurringTaskService {
     List<RecurringTask> findAll();
     List<RecurringTask> findByUserId(Long userId);
     RecurringTask create(RecurringTaskRequestDto request);
+    RecurringTask update(String id, RecurringTaskRequestDto request);
     void deleteById(String id);
 }

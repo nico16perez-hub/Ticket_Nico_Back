@@ -107,7 +107,7 @@ public class TicketServiceImpl implements TicketService {
         ticketResponseDto.setType(ticket.getType());
         ticketResponseDto.setDescription(ticket.getDescription());
         ticketResponseDto.setSolution(ticket.getSolution());
-        ticketResponseDto.setSolvedBy(ticket.getSolvedBy());
+        ticketResponseDto.setSolvedBy(ticket.getSolvedBy() == null || ticket.getSolvedBy().isBlank() ? "-" : ticket.getSolvedBy());
         if (ticket.getSolvedDate() != null) {
             SimpleDateFormat solvedDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String formattedSolvedDate = solvedDateFormat.format(ticket.getSolvedDate());
@@ -133,7 +133,11 @@ public class TicketServiceImpl implements TicketService {
         ticket.setSolution(ticketRequestDto.getSolution());
         ticket.setSolvedBy(ticketRequestDto.getSolvedBy());
         ticket.setSolvedDate(ticketRequestDto.getSolvedDate());
-        ticket.setClosed(ticketRequestDto.isClosed());
+        boolean hasSolution = ticketRequestDto.getSolution() != null && !ticketRequestDto.getSolution().isBlank();
+        ticket.setClosed(ticketRequestDto.isClosed() || hasSolution);
+        if (ticket.isClosed() && ticket.getSolvedDate() == null) {
+            ticket.setSolvedDate(new Date());
+        }
         ticket.setImportant(ticketRequestDto.isImportant());
         return ticket;
     }
